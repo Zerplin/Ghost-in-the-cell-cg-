@@ -1,0 +1,62 @@
+            
+'''      
+        if (minDist==20):
+            
+            for i in range(factoryOwnedCount):
+                d = factoryOwned[i]
+                
+                if ((factoryInfo[s][2]>(factoryInfo[d][2]+1)) and checkDist(s,d)<minDist):
+                    n =(factoryInfo[d][2]+1)
+                    commandString += "MOVE {} {} {};".format(s,d,n)
+                    check +=1'''
+     
+    '''
+    while (minDist<20):
+        for i in range(factoryNotOwnedCount):
+            d = factoryNotOwned[i]
+        
+        # while main source still has cyborgs try to relocate them
+        # try to sort it into closet nodes first ? or lowest neutral nodes
+        # if dist / all surround nodes friendly, start distributing cyborgs between friendly nodes
+    
+            if ((factoryInfo[s][2]>(factoryInfo[d][2]+1)) and checkDist(s,d)<minDist):
+                n =(factoryInfo[d][2]+1)
+                
+                commandString += "MOVE {} {} {};".format(s,d,n)
+                check +=1
+        if (check>0):
+            print(commandString[:-1]) # Remove trailing ;
+            break
+        else:
+            minDist+=1
+            #print("WAIT")
+            # alt version where minDist is contant and start to distribute cyborgs if no nodes can be found
+    if (minDist==20):
+        print("WAIT")
+        
+    '''    
+        
+    '''
+    if ( factoryInfo[s][2]>(factoryInfo[d][2]+1)):
+        n =(factoryInfo[d][2]+1)
+        print("MOVE",s," ",d," ",n,";")
+        
+    else:
+        print("WAIT")
+    # Any valid action, such as "WAIT" or "MOVE source destination cyborgs"
+    '''
+    '''
+    for i in range(factoryOwnedCount):
+        print("fac count ",factoryOwnedCount, file=sys.stderr)     
+        
+        #for y in range()
+        #print("factory inf ",factoryInfo[factoryOwned[i]][1], file=sys.stderr)
+        print("factory cyb ",(factoryInfo[factoryOwned[i]][2]), file=sys.stderr)
+        #for y in range((factoryInfo[factoryOwned[i]][2])):
+        if (amount(i)!= None):
+            commandString += "MOVE {} {} {};".format(factoryOwned[i],dstn(),amount(i))
+        else:
+            commandString="WAIT;"
+    print(commandString[:-1]) # Remove trailing ;
+    sourceId=0;
+    '''
