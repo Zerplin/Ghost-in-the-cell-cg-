@@ -1,0 +1,364 @@
+import sys
+import math
+import numpy as np
+np.set_printoptions(threshold=np.nan)
+
+
+
+
+
+# send all bots to nearest factory that is neutral if all neutral attack nearest enemy
+def source():
+    print("source ",s,file=sys.stderr)
+    return factoryOwned[np.random.randint(0,len(factoryOwned))]
+
+def mainSource():
+    s = source()
+    main = factoryInfo[s][2]
+    mainId= s
+    for i in range(factoryOwnedCount):
+        if(factoryInfo[factoryOwned[i]][2]>main):
+            main=factoryInfo[factoryOwned[i]][2]
+            mainId=factoryInfo[factoryOwned[i]][0]
+            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
+    print("main source ",mainId,file=sys.stderr)
+    return mainId
+    
+def enemyMain(): # fix by splitting notOwned into enemy and neutral or check it within this func
+    main = 0
+    mainId= 0
+    for i in range(len(factoryEnemy)):
+        if(factoryInfo[factoryEnemy[i]][2]>main):
+            main=factoryInfo[factoryEnemy[i]][2]
+            mainId=factoryInfo[factoryEnemy[i]][0]
+            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
+    print("main enemy source ",mainId,file=sys.stderr)
+    return mainId
+
+def sendBomb():
+    
+    
+    return 0
+
+def lowSource():
+    
+    main = 9999
+    mainId= 0
+    for i in range(factoryOwnedCount):
+        print("low source i ",i,file=sys.stderr)
+        s = factoryOwned[i]
+        if(factoryInfo[s][2]<main):
+            main=factoryInfo[factoryOwned[i]][2]
+            mainId=factoryInfo[factoryOwned[i]][0]
+            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
+    print("low source ",mainId,file=sys.stderr)
+    return mainId
+
+
+            
+def dstn():
+    if(len(factoryNotOwned)==0):
+        return ((s+1)%len(factoryOwned))
+    return factoryNotOwned[np.random.randint(0,len(factoryNotOwned))] 
+
+def safe_div(x,y):
+    if y == 0:
+        return 0
+    return x / y    
+    
+def amount(i):
+    print("amount() ", math.floor(safe_div((factoryInfo[factoryOwned[i]][2]),2)), file=sys.stderr)   
+   
+    return  math.floor(safe_div((factoryInfo[factoryOwned[i]][2]),2))
+    
+def dist(s,d):
+    dist = distInfo[s][d]
+    distId = d
+    for i in range(factoryNotOwnedCount):
+        if(distInfo[s][factoryNotOwned[i]]<dist):
+            dist = distInfo[s][factoryNotOwned[i]]
+            distId=factoryNotOwned[i]
+    print("dist() ",distId, file=sys.stderr)
+    return distId
+
+def checkDist(f1,f2):  
+    
+    return distInfo[f1][f2]
+    
+
+def target():
+    for i in range(factoryNotOwnedCount):
+        targetId = factoryNotOwned[i]
+    return targetId
+         
+# Auto-generated code below aims at helping you parse
+# the standard input according to the problem statement.
+factoryOwned =[]
+factoryNotOwned =[]
+factoryEnemy=[]
+factoryOwnedCount=0;
+factoryNotOwnedCount=0;
+
+#factoryInfo = np.zeros((15, 5))
+factoryInfo = [[0 for i in range(5)] for j in range(15)]
+print("factory ini \n",factoryInfo, file=sys.stderr)
+
+bombInfo = [[0 for i in range(5)] for j in range(15)]
+print("bomb ini \n",bombInfo, file=sys.stderr)
+
+troopInfo = [[0 for i in range(6)] for j in range(1)]
+
+
+factory_count = int(input())  # the number of factories
+
+distInfo = [[99 for i in range(factory_count)] for j in range(factory_count)]
+print("dist ini \n",distInfo, file=sys.stderr)
+###############################################################################
+###############################################################################
+
+link_count = int(input())  # the number of links between factories
+for i in range(link_count):
+    factory_1, factory_2, distance = [int(j) for j in input().split()]
+    
+    print("dist ",factory_1, factory_2, distance,file=sys.stderr)
+    
+    distInfo[factory_1][factory_2] = distance
+    distInfo[factory_2][factory_1] = distance
+print("dist ini \n",distInfo, file=sys.stderr)    
+
+
+###############################################################################
+###############################################################################
+# game loop
+turn=0
+bombs = 2
+while True:
+    factoryOwnedCount=0;
+    factoryNotOwnedCount=0;
+    entity_count = int(input())  # the number of entities (e.g. factories and troops)
+    for i in range(entity_count):
+        entity_id, entity_type, arg_1, arg_2, arg_3, arg_4, arg_5 = input().split()
+        entity_id = int(entity_id)
+        arg_1 = int(arg_1)
+        arg_2 = int(arg_2)
+        arg_3 = int(arg_3)
+        arg_4 = int(arg_4)
+        arg_5 = int(arg_5)
+        
+        if (entity_type == "FACTORY"):
+            if(arg_1==1):
+                factoryOwned.append(i)
+                factoryOwnedCount+=1
+            else:
+                factoryNotOwned.append(i) # todo split into neural and enemy
+                factoryNotOwnedCount+=1
+                
+                if(arg_1==-1):
+                    factoryEnemy.append(i)
+                
+            factoryInfo[i][0]=((i))  # ID 
+            factoryInfo[i][1]=((arg_1))  # Owner
+            factoryInfo[i][2]=((arg_2))  # # Cyborgs
+            factoryInfo[i][3]=((arg_3))  # Production
+            factoryInfo[i][4]=((arg_4)) # Turns until production
+        
+        if (entity_type == "BOMB"):
+            
+            bombInfo[0][1]=((arg_1))  # Owner
+            bombInfo[0][2]=((arg_2))  # source
+            bombInfo[0][3]=((arg_3))  # target
+            bombInfo[0][4]=((arg_4)) # Turns until arrival
+        
+        if (entity_type == "TROOP"):
+            
+            troopInfo[0][1]=((arg_1))  # Owner
+            troopInfo[0][2]=((arg_2))  # source
+            troopInfo[0][3]=((arg_3))  # target
+            troopInfo[0][4]=((arg_4))  # amount  
+            troopInfo[0][5]=((arg_5))  # Turns until arrival
+            
+            
+            
+                
+        # target friendly
+        if(factoryInfo[troopInfo[0][3]][1]==1): 
+            
+            # re calc cyborgs in target fac
+            factoryInfo[troopInfo[0][3]][2] += (troopInfo[0][4]*troopInfo[0][1])
+            
+            #if friendly fac has less than 0 borgs it has been converted to enemy
+            if(factoryInfo[troopInfo[0][3]][2]<0):
+                
+                #factoryNotOwned.append(factoryInfo[troopInfo[0][3]][1])
+                factoryInfo[troopInfo[0][3]][1]= -1
+                factoryInfo[troopInfo[0][3]][2] = abs(factoryInfo[troopInfo[0][3]][2])
+#######################################################################################################       
+        
+        # target neutral
+        if(factoryInfo[troopInfo[0][3]][1]==0): 
+            
+            # re calc cyborgs in target fac
+            factoryInfo[troopInfo[0][3]][2] - (troopInfo[0][4])
+            
+            #if neutral fac has less than 0 borgs it has been converted to enemy or friendly xd
+            if(factoryInfo[troopInfo[0][3]][2]<0):
+                
+                #factoryNotOwned.append(factoryInfo[troopInfo[0][3]][1])
+                factoryInfo[troopInfo[0][3]][1]= 1 # this is hack fix assume converted to friendly
+                factoryInfo[troopInfo[0][3]][2] = abs(factoryInfo[troopInfo[0][3]][2])     
+                
+                
+                '''
+                # target enemy
+                if(troopInfo[0][3] ==-1):
+                    factoryInfo[troopInfo[0][3]][2] -= (troopInfo[0][4]*troopInfo[0][1])
+                    
+                    if(factoryInfo[troopInfo[0][3]][2]<0):
+                            factoryInfo[troopInfo[0][3]][1]= 1
+                            factoryInfo[troopInfo[0][3]][2] = abs(factoryInfo[troopInfo[0][3]][2])
+                '''    
+                
+    # if all enemies within 3 turns < than friendl node = safe to increase production
+    
+    
+    # Write an action using print
+    # To debug: print("Debug messages...", file=sys.stderr)
+    
+    #s = source()
+    #s = mainSource()
+    #print("main source ",mainSource(), file=sys.stderr)
+    
+    
+#########################################################################
+######################################################################### 
+    
+    commandString =""
+    check = 0    
+    frontDist = 20
+    frontId =0
+    minDist = 20
+    maxDist = 21
+    dist =0
+    minDistId = None
+    bombSource = None
+    bombTarget = None
+    
+    
+    # todo can be improved by setting target borg count to 0/-50 while bomb is still on way
+    # instead of just the instant turn the bomb is sent
+    if (turn==0 and bombs==2):
+        
+        bombSource = lowSource()
+        bombTarget = enemyMain()
+        if(bombSource!=bombTarget):
+            commandString += "BOMB {} {};".format(bombSource,bombTarget)
+            factoryInfo[bombTarget][2]= -50
+            
+        bombs-=1
+    
+    if (turn==5 and bombs==1):
+        bombSource = lowSource()
+        bombTarget = enemyMain()
+        if(bombSource!=bombTarget):
+            commandString += "BOMB {} {};".format(bombSource,bombTarget)
+            factoryInfo[bombTarget][2]= -50
+        bombs-=1
+        
+###############################################################################################    
+    
+    for j in range(factoryOwnedCount):
+        s = factoryOwned[j] 
+        minDist=21
+        #print("loop ",s ,file=sys.stderr)
+        check=0
+        minDistId = None    
+        
+        while(dist<maxDist):
+        
+            
+            for i in range(factoryNotOwnedCount):
+                d = factoryNotOwned[i]
+                curDist = checkDist(s,d)
+                
+                print("s,d,dist ",s,d,checkDist(s,d) ,file=sys.stderr)
+               
+            # if enough borgs to invade fac send borgs to friendly fac with closet distance
+            # while main source still has cyborgs try to relocate them
+            # try to sort it into closet nodes first ? or lowest neutral nodes
+            # if dist / all surround nodes friendly, start distributing cyborgs between friendly nodes
+                '''
+                if(factoryInfo[d][1]==1):
+                    n = factoryInfo[s][2]
+                    
+                    commandString += "MOVE {} {} {};".format(s,d,n)
+                    factoryInfo[s][2]-=n
+                    check +=1
+                '''
+                if ((factoryInfo[s][2]>(factoryInfo[d][2])+1) and checkDist(s,d)<minDist):
+                    
+                    minDist = checkDist(s,d)
+                    minDistId = d
+                    print("mindist mindist id ",minDist,minDistId,file=sys.stderr)
+                    check +=1
+                    
+                    if(factoryInfo[d][1]==-1):
+                        n = factoryInfo[d][2]
+                    else:
+                        n =(factoryInfo[d][2])
+                    
+            commandString += "MOVE {} {} {};".format(s,minDistId,n)
+            factoryInfo[s][2]-=n
+            
+            if (minDistId in factoryNotOwned):
+                factoryNotOwned.remove(minDistId)
+                factoryNotOwnedCount-=1    
+            dist+=1 
+             
+             
+                
+                
+        if(minDist<frontDist):
+            frontId = minDistId
+            frontDist = minDist        
+        #minDist+=1
+        
+        if ( check==0): 
+            if(factoryInfo[s][2]>=10):
+                commandString += "INC {};".format(s)
+                factoryInfo[s][2]-=10
+                '''
+                elif(s!=frontId):
+                    n = (factoryInfo[s][2]+factoryInfo[s][3])
+                    commandString += "MOVE {} {} {};".format(s,frontId,n)
+                '''
+            # replace this with distribute friendly nodes that are close to enemy nodes
+            '''
+            if (minDist==maxDist and check==0):
+                   
+                   for i in range(factoryOwnedCount):
+                       d = factoryOwned[i]
+                       
+                       if ((factoryInfo[s][2]>(factoryInfo[d][2]+1)) and checkDist(s,d)<minDist):
+                           n =(factoryInfo[d][2]+1)
+                           commandString += "MOVE {} {} {};".format(s,d,n)
+                           check +=1
+                           factoryInfo[s][2]-=(factoryInfo[d][2]+1)
+             '''      
+                  
+    
+        
+                
+    if(commandString==""):
+        print("WAIT")
+    else:
+        print(commandString[:-1])            
+            
+    
+   # print("rand fac ",source(),file=sys.stderr)
+    factoryOwned=[]
+    factoryNotOwned =[]
+    factoryEnemy=[]
+    ammo=0
+    turn+=1
+    
+    
