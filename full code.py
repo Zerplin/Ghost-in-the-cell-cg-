@@ -11,6 +11,7 @@ bombT1 =None
 bombT2 = None
 bombS1 =None
 bombS2 = None
+frontId = None
 # send all bots to nearest factory that is neutral if all neutral attack nearest enemy
 class Factory:
     "Class to store factory values"
@@ -287,7 +288,7 @@ while True:
             troopInfo[0][5]=((arg_5))  # Turns until arrival
             
             troop = Troop(i,arg_1,arg_2,arg_3,arg_4,arg_5)
-            if (troop.turns<3):
+            if (troop.turns<4):
                 troopList.append(troop)
             
     for i in range(len(troopList)):  # predicts future state of factories except enemy factories
@@ -401,7 +402,7 @@ while True:
     commandString =""
     check = 0    
     frontDist = 20
-    frontId =0
+    
     minDist = 0
     maxDist = 20
     bombSource = None
@@ -428,6 +429,18 @@ while True:
         #factoryList[bombT2].cyborgs=0
         updateList()
 
+#make new list of not owned And viable targets, production >0     
+    frontDist = 20
+    initOwnedList = list(set(initOwnedList)-set(enemyList))
+    for j in range(len(initOwnedList)):
+        s = initOwnedList[j].i
+        for z in range(len(notOwnedList)):
+            d = notOwnedList[z].i
+            if(checkDist(s,d)<frontDist):
+                frontId = d
+                frontAllyId = s
+                frontDist = checkDist(s,d)
+
     initOwnedList = list(set(initOwnedList)-set(enemyList))
     for j in range(len(initOwnedList)):
         s = initOwnedList[j].i 
@@ -452,11 +465,12 @@ while True:
                         factoryInfo[s][2]-=n
                         check +=1
                 '''                  
-                
-                if ((factoryList[s].cyborgs>(factoryList[d].cyborgs)+1) and checkDist(s,d)<minDist and factoryList[d].production>0 ):
+                #precalc front dist
+                if ((factoryList[s].cyborgs>(factoryList[d].cyborgs)+1) and checkDist(s,d)==frontDist and factoryList[d].production>=0 ):
                      #and checkDist(s,d)<6 
                     if(checkDist(s,d)<frontDist):
                         frontId = d
+                        frontAllyId = s
                         frontDist = checkDist(s,d)
                     '''
                     if(factoryInfo[d][1]==-1):
