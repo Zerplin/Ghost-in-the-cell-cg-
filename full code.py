@@ -11,6 +11,7 @@ bombT1 =None
 bombT2 = None
 bombS1 =None
 bombS2 = None
+frontId = None
 # send all bots to nearest factory that is neutral if all neutral attack nearest enemy
 class Factory:
     "Class to store factory values"
@@ -65,7 +66,6 @@ def findBombTargets():
     print("t1t2 ",bombT1,bombT2,file=sys.stderr)
     print("enemyList ",enemyList,file=sys.stderr)
     '''
-    
     return 0
     
 def findBombSource():
@@ -77,125 +77,33 @@ def findBombSource():
     #print("s1s2 ",bombS1,bombS2,file=sys.stderr)
     #print("ownedList ",ownedList,file=sys.stderr)
     return 0
-    
-##################################################################################    
-################################################################################## 
 
-def mainSource():
-    s = source()
-    main = factoryInfo[s][2]
-    mainId= s
-    for i in range(factoryOwnedCount):
-        if(factoryInfo[factoryOwned[i]][2]>main):
-            main=factoryInfo[factoryOwned[i]][2]
-            mainId=factoryInfo[factoryOwned[i]][0]
-            
-    print("main source ",mainId,file=sys.stderr)
-    return mainId
-    
-##################################################################################    
-##################################################################################  
-
-def enemyMain(prevBombTarget): # fix by splitting notOwned into enemy and neutral or check it within this func
-    main = 0
-    mainId= 0
-    if(prevBombTarget in factoryEnemy):
-        factoryEnemy.remove(prevBombTarget)
-    for i in range(len(factoryEnemy)):
-        if(factoryInfo[factoryEnemy[i]][2]>main):
-            main=factoryInfo[factoryEnemy[i]][2]
-            mainId=factoryInfo[factoryEnemy[i]][0]
-            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
-    print("main enemy source ",mainId,file=sys.stderr)
-    prevBombTarget = mainId
-    return mainId
-
-
-    for i in range(len(factoryEnemy)):
-        if(factoryInfo[factoryEnemy[i]][2]>main):
-            main=factoryInfo[factoryEnemy[i]][2]
-            mainId=factoryInfo[factoryEnemy[i]][0]
-            factoryInfo[factoryEnemy[i]][1]=1
-    
-    factoryEnemy.remove(mainId)
-            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
-    print("main enemy source ",mainId,file=sys.stderr)
-    return mainId
-
-
-
-##################################################################################    
-##################################################################################
-
-
-def lowSource():
-    
-    main = 9999
-    mainId= 0
-    for i in range(factoryOwnedCount):
-        print("low source i ",i,file=sys.stderr)
-        s = factoryOwned[i]
-        if(factoryInfo[s][2]<main):
-            main=factoryInfo[factoryOwned[i]][2]
-            mainId=factoryInfo[factoryOwned[i]][0]
-            #print("mainsource ,id, compare ",main,mainId,factoryInfo[factoryOwned[i]][2], file=sys.stderr)
-    print("low source ",mainId,file=sys.stderr)
-    return mainId
-
-
-            
-def dstn():
-    if(len(factoryNotOwned)==0):
-        return ((s+1)%len(factoryOwned))
-    return factoryNotOwned[np.random.randint(0,len(factoryNotOwned))] 
-
-def safe_div(x,y):
-    if y == 0:
-        return 0
-    return x / y    
-    
-def amount(i):
-    print("amount() ", math.floor(safe_div((factoryInfo[factoryOwned[i]][2]),2)), file=sys.stderr)   
-   
-    return  math.floor(safe_div((factoryInfo[factoryOwned[i]][2]),2))
-    
-def dist(s,d):
-    dist = distInfo[s][d]
-    distId = d
-    for i in range(factoryNotOwnedCount):
-        if(distInfo[s][factoryNotOwned[i]]<dist):
-            dist = distInfo[s][factoryNotOwned[i]]
-            distId=factoryNotOwned[i]
-    print("dist() ",distId, file=sys.stderr)
-    return distId
+def findFrontDist():
+    global frontDist
+    frontDist = 20
+    global initOwnedList
+    initOwnedList = list(set(initOwnedList)-set(enemyList))
+    for j in range(len(initOwnedList)):
+        s = initOwnedList[j].i
+        for z in range(len(notOwnedList)):
+            d = notOwnedList[z].i
+            if(checkDist(s,d)<frontDist):
+                
+                global frontId
+                frontId = d
+                global frontAllyId
+                frontAllyId = s
+                frontDist = checkDist(s,d)
 
 def checkDist(f1,f2):  
     
     return distInfo[f1][f2]
     
+##################################################################################    
+################################################################################## 
+'''
 
-def target():
-    for i in range(factoryNotOwnedCount):
-        targetId = factoryNotOwned[i]
-    return targetId
-         
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
-factoryOwned =[]
-factoryNotOwned =[]
-factoryEnemy=[]
-factoryOwnedCount=0;
-factoryNotOwnedCount=0;
-
-#factoryInfo = np.zeros((15, 5))
-factoryInfo = [[0 for i in range(5)] for j in range(15)]
-print("factory ini \n",factoryInfo, file=sys.stderr)
-
-bombInfo = [[0 for i in range(5)] for j in range(15)]
-print("bomb ini \n",bombInfo, file=sys.stderr)
-
-troopInfo = [[0 for i in range(6)] for j in range(1)]
-
+'''
 
 factory_count = int(input())  # the number of factories
 
@@ -244,27 +152,15 @@ while True:
         arg_5 = int(arg_5)
         
         if (entity_type == "FACTORY"):
-            if(arg_1==1):
-                factoryOwned.append(i)
-                factoryOwnedCount+=1
-            else:
-                factoryNotOwned.append(i) # todo split into neural and enemy
-                factoryNotOwnedCount+=1
-                
-                if(arg_1==-1):
-                    factoryEnemy.append(i)
-                
-            factoryInfo[i][0]=((i))  # ID 
-            factoryInfo[i][1]=((arg_1))  # Owner
-            factoryInfo[i][2]=((arg_2))  # # Cyborgs
-            factoryInfo[i][3]=((arg_3))  # Production
-            factoryInfo[i][4]=((arg_4)) # Turns until production
-        
+            '''  
+
+            '''
         ##############################################################
         ##############################################################
         
             fac = Factory(i,arg_1,arg_2,arg_3,arg_4)
-            factoryList.append(fac)
+            if (fac.production>=0):
+                factoryList.append(fac)
             
             if (fac.owner==1):
                 initOwnedList.append(fac)
@@ -272,20 +168,13 @@ while True:
             print("fac ",fac.i,fac.owner,fac.cyborgs, file=sys.stderr)
             
         if (entity_type == "BOMB"):
-            
-            bombInfo[0][1]=((arg_1))  # Owner
-            bombInfo[0][2]=((arg_2))  # source
-            bombInfo[0][3]=((arg_3))  # target
-            bombInfo[0][4]=((arg_4)) # Turns until arrival
-        
+            '''
+
+            '''
         if (entity_type == "TROOP"):
-            
-            troopInfo[0][1]=((arg_1))  # Owner
-            troopInfo[0][2]=((arg_2))  # source
-            troopInfo[0][3]=((arg_3))  # target
-            troopInfo[0][4]=((arg_4))  # amount  
-            troopInfo[0][5]=((arg_5))  # Turns until arrival
-            
+            '''
+
+            '''
             troop = Troop(i,arg_1,arg_2,arg_3,arg_4,arg_5)
             if (troop.turns<3):
                 troopList.append(troop)
@@ -293,28 +182,22 @@ while True:
     for i in range(len(troopList)):  # predicts future state of factories except enemy factories
         
         
-        if(factoryList[troopList[i].target].owner == 1):
-        
+        if(factoryList[troopList[i].target].owner == 1): #friendly target
             factoryList[troopList[i].target].cyborgs += (troopList[i].amount*troopList[i].owner)    
-            
             if ((factoryList[troopList[i].target].cyborgs)<0):
                 factoryList[troopList[i].target].owner=-1
                 factoryList[troopList[i].target].cyborgs = abs(factoryList[troopList[i].target].cyborgs)
         
         
-        elif(factoryList[troopList[i].target].owner == 0):
-            
+        elif(factoryList[troopList[i].target].owner == 0): #neutral target
             factoryList[troopList[i].target].cyborgs += (troopList[i].amount*troopList[i].owner)    
-            
             if ((factoryList[troopList[i].target].cyborgs)<0):
                 factoryList[troopList[i].target].owner=-1
                 factoryList[troopList[i].target].cyborgs = abs(factoryList[troopList[i].target].cyborgs)        
-                
             elif ((factoryList[troopList[i].target].cyborgs)>0):
                 factoryList[troopList[i].target].owner=1    
         
-        elif(factoryList[troopList[i].target].owner == -1):
-            
+        elif(factoryList[troopList[i].target].owner == -1): #enemy target
             factoryList[troopList[i].target].cyborgs -= (troopList[i].amount*troopList[i].owner) 
             if ((factoryList[troopList[i].target].cyborgs)<0):
                factoryList[troopList[i].target].owner=1
@@ -401,7 +284,7 @@ while True:
     commandString =""
     check = 0    
     frontDist = 20
-    frontId =0
+    
     minDist = 0
     maxDist = 20
     bombSource = None
@@ -428,6 +311,9 @@ while True:
         #factoryList[bombT2].cyborgs=0
         updateList()
 
+#make new list of not owned And viable targets, production >0     
+    findFrontDist()
+
     initOwnedList = list(set(initOwnedList)-set(enemyList))
     for j in range(len(initOwnedList)):
         s = initOwnedList[j].i 
@@ -452,11 +338,12 @@ while True:
                         factoryInfo[s][2]-=n
                         check +=1
                 '''                  
-                
+                #precalc front dist
                 if ((factoryList[s].cyborgs>(factoryList[d].cyborgs)+1) and checkDist(s,d)<minDist and factoryList[d].production>0 ):
                      #and checkDist(s,d)<6 
                     if(checkDist(s,d)<frontDist):
                         frontId = d
+                        frontAllyId = s
                         frontDist = checkDist(s,d)
                     '''
                     if(factoryInfo[d][1]==-1):
@@ -464,12 +351,16 @@ while True:
                     else:
                         n =(factoryInfo[d][2]+1)
                     '''
-                    n =(factoryList[d].cyborgs)+1
+                    #n =(factoryList[d].cyborgs)+1
+                    n =(factoryList[s].cyborgs)
+                    if(factoryList[d].owner==-1):
+                        n =(factoryList[s].cyborgs)
                     
                     commandString += "MOVE {} {} {};".format(s,d,n)
                     factoryList[s].cyborgs-= n
                     check +=1
-                
+                    
+                    
 
                     
                     
@@ -497,7 +388,7 @@ while True:
                     #if(factoryList[s].cyborgs>lowAlly and lowAllyId!=None):
                     #n = round((factoryList[s].cyborgs+lowAlly)/2)
                     if(allyId!=None):
-                        n = factoryList[s].cyborgs
+                        n = factoryList[s].cyborgs+factoryList[s].production
                         commandString += "MOVE {} {} {};".format(s,allyId,n)
                         factoryList[s].cyborgs-=n
                 
@@ -549,4 +440,3 @@ while True:
     turn+=1
     
 
-    
