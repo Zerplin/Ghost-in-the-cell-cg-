@@ -1,4 +1,3 @@
-
 import sys
 import math
 import numpy as np
@@ -287,7 +286,7 @@ while True:
             troopInfo[0][5]=((arg_5))  # Turns until arrival
             
             troop = Troop(i,arg_1,arg_2,arg_3,arg_4,arg_5)
-            if (troop.turns<3):
+            if (troop.turns<4):
                 troopList.append(troop)
             
     for i in range(len(troopList)):  # predicts future state of factories except enemy factories
@@ -453,7 +452,7 @@ while True:
                         check +=1
                 '''                  
                 
-                if ((factoryList[s].cyborgs>(factoryList[d].cyborgs)+1) and checkDist(s,d)<minDist and factoryList[d].production>0 ):
+                if ((factoryList[s].cyborgs>(factoryList[d].cyborgs)+1) and checkDist(s,d)<5 and factoryList[d].production>0 ):
                      #and checkDist(s,d)<6 
                     if(checkDist(s,d)<frontDist):
                         frontId = d
@@ -549,4 +548,5 @@ while True:
     turn+=1
     
 
+    
     
