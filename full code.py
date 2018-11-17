@@ -406,7 +406,8 @@ while True:
         print("loop ",s ,file=sys.stderr)
         while (minDist<maxDist):
            
-            #print("notOwned ",notOwnedList ,file=sys.stderr)    
+            #print("notOwned ",notOwnedList ,file=sys.stderr)
+            notOwnedList.sort(key=lambda fac: fac.production, reverse=True)
             for z in range(len(notOwnedList)):
                 d = notOwnedList[z].i
                 #print("minDist, s,d,loop ",minDist,factoryList[s].cyborgs,factoryList[d].cyborgs ,file=sys.stderr)
@@ -475,7 +476,7 @@ while True:
                 
                 
                 
-                if((factoryList[s].cyborgs)<5 or factoryList[s].production==3):
+                if( factoryList[s].production==3):
                     
                     for x in range(len(ownedList)):
                         if (ownedList[x].i!=s):
