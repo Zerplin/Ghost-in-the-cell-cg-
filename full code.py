@@ -1,4 +1,3 @@
-
 import sys
 import math
 import numpy as np
@@ -475,8 +474,11 @@ while True:
                     factoryList[s].cyborgs-=10
                 
                 
-                
-                if( factoryList[s].production==3):
+                if len(factoryList)>10:
+                    x=2
+                else:
+                    x=2
+                if( factoryList[s].production>2):
                     
                     for x in range(len(ownedList)):
                         if (ownedList[x].i!=s):
